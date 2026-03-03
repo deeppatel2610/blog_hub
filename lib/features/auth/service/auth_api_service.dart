@@ -23,7 +23,7 @@ class AuthApiService {
     required String password,
   }) async {
     try {
-      Response response = await ApiClient().apiCalling(
+      Response? response = await ApiClient().apiCalling(
         context: context,
         endpoint: ApiConfig.register,
         method: HttpMethod.post,
@@ -38,6 +38,9 @@ class AuthApiService {
           "Accept": "application/json",
         },
       );
+      if (response == null) {
+        return MessageType.error;
+      }
       if (response.statusCode == 201) {
         return MessageType.success;
       } else if (response.statusCode == 422) {
@@ -64,23 +67,25 @@ class AuthApiService {
   // login
   Future<MessageType> loginApiCalling({
     required BuildContext context,
-    required String email,
+    required String username,
     required String password,
   }) async {
     try {
-      Response response = await ApiClient().apiCalling(
+      Response? response = await ApiClient().apiCalling(
         context: context,
         endpoint: ApiConfig.login,
         method: HttpMethod.post,
         body: {
-          "email": email,
+          "username": username,
           "password": password,
         },
         headers: {
-          "Content-Type": "application/json",
-          "Accept": "application/json",
+          "Content-Type": "application/x-www-form-urlencoded",
         },
       );
+      if (response == null) {
+        return MessageType.error;
+      }
       if (response.statusCode == 200) {
         Map decodedToken = JwtDecoder.decode(response.data['access_token']);
         String role = decodedToken['role'];
@@ -97,7 +102,7 @@ class AuthApiService {
             PreferenceKeys.assessToken, response.data['access_token']);
         sharedPreferences.setString(
             PreferenceKeys.tokenType, response.data['token_type']);
-        sharedPreferences.setString(PreferenceKeys.email, email);
+        sharedPreferences.setString(PreferenceKeys.username, username);
         sharedPreferences.setString(PreferenceKeys.password, password);
         return MessageType.success;
       } else if (response.statusCode == 400) {

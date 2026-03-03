@@ -3,8 +3,10 @@ import 'package:blog_hub/ core/utils/enums.dart';
 import 'package:blog_hub/features/auth/auth_component.dart';
 import 'package:blog_hub/features/auth/controller/login_provider_controller.dart';
 import 'package:blog_hub/features/auth/view/register_screen.dart';
+import 'package:blog_hub/features/dashboard/admin%20dashboard/view/admin_dashboard.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -211,16 +213,43 @@ class _LoginScreenState extends State<LoginScreen>
 
                                     final result = await ctrl.onLoginApiCalling(
                                       context: context,
-                                      email: ctrl.emailController.text.trim(),
+                                      username:
+                                          ctrl.emailController.text.trim(),
                                       password:
                                           ctrl.passwordController.text.trim(),
                                     );
 
                                     if (result == MessageType.success) {
-                                      AppMessenger.showSnackBar(
+                                      SharedPreferences sharedPreferences =
+                                          await SharedPreferences.getInstance();
+                                      bool isLoggedIn = sharedPreferences
+                                              .getBool("isLoggedIn") ??
+                                          false;
+                                      bool isAdmin = sharedPreferences
+                                              .getBool("isAdmin") ??
+                                          false;
+                                      Navigator.pushReplacement(
                                         context,
-                                        message: "Login successful",
-                                        type: MessageType.success,
+                                        PageRouteBuilder(
+                                          pageBuilder: (_, __, ___) => isLoggedIn
+                                              ? isAdmin
+                                                  ? const AdminDashboardScreen()
+                                                  : const Scaffold(
+                                                      body: Center(
+                                                        child: Text(
+                                                            'You are not an admin'),
+                                                      ),
+                                                    )
+                                              : const LoginScreen(),
+                                          transitionsBuilder:
+                                              (_, animation, __, child) {
+                                            return FadeTransition(
+                                                opacity: animation,
+                                                child: child);
+                                          },
+                                          transitionDuration:
+                                              const Duration(milliseconds: 500),
+                                        ),
                                       );
                                     } else {
                                       AppMessenger.showSnackBar(
@@ -337,7 +366,8 @@ class _LoginScreenState extends State<LoginScreen>
                                     Navigator.pushReplacement(
                                       context,
                                       MaterialPageRoute(
-                                        builder: (context) => const RegisterScreen(),
+                                        builder: (context) =>
+                                            const RegisterScreen(),
                                       ),
                                     );
                                   },

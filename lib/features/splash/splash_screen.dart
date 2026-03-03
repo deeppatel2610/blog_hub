@@ -114,13 +114,19 @@ class _SplashScreenState extends State<SplashScreen>
       SharedPreferences sharedPreferences =
           await SharedPreferences.getInstance();
       bool isLoggedIn = sharedPreferences.getBool("isLoggedIn") ?? false;
-
-      /// TODO change a screen
+      bool isAdmin = sharedPreferences.getBool("isAdmin") ?? false;
       Navigator.pushReplacement(
         context,
         PageRouteBuilder(
-          pageBuilder: (_, __, ___) =>
-              isLoggedIn ? const AdminDashboardScreen() : const LoginScreen(),
+          pageBuilder: (_, __, ___) => isLoggedIn
+              ? isAdmin
+                  ? const AdminDashboardScreen()
+                  : const Scaffold(
+                      body: Center(
+                        child: Text('You are not an admin'),
+                      ),
+                    )
+              : const LoginScreen(),
           transitionsBuilder: (_, animation, __, child) {
             return FadeTransition(opacity: animation, child: child);
           },
