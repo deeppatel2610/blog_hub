@@ -4,6 +4,13 @@ enum HttpMethod { get, post, put, delete }
 
 enum MessageType { success, error, warning, info }
 
+enum NetworkStatus {
+  fast,
+  medium,
+  slow,
+  noInternet,
+}
+
 extension MessageTypeExtension on MessageType {
   Color get backgroundColor {
     switch (this) {

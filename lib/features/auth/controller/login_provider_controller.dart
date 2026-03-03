@@ -64,7 +64,7 @@ class LoginProviderController extends ChangeNotifier {
 
   Future<MessageType> onLoginApiCalling({
     required BuildContext context,
-    required String email,
+    required String username,
     required String password,
   }) async {
     if (!formKey.currentState!.validate()) return MessageType.error;
@@ -74,7 +74,7 @@ class LoginProviderController extends ChangeNotifier {
 
       MessageType messageType =
       await AuthApiService.authApiService.loginApiCalling(
-        email: email,
+        username: username,
         password: password,
         context: context,
       );
