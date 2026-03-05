@@ -1,5 +1,6 @@
 import 'package:blog_hub/features/auth/view/login_screen.dart';
 import 'package:blog_hub/features/dashboard/admin%20dashboard/view/admin_dashboard.dart';
+import 'package:blog_hub/features/dashboard/user%20dashboard/view/user_dashboard_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -121,11 +122,7 @@ class _SplashScreenState extends State<SplashScreen>
           pageBuilder: (_, __, ___) => isLoggedIn
               ? isAdmin
                   ? const AdminDashboardScreen()
-                  : const Scaffold(
-                      body: Center(
-                        child: Text('You are not an admin'),
-                      ),
-                    )
+                  : const UserDashboardScreen()
               : const LoginScreen(),
           transitionsBuilder: (_, animation, __, child) {
             return FadeTransition(opacity: animation, child: child);

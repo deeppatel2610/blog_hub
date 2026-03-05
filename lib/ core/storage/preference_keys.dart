@@ -6,4 +6,5 @@ class PreferenceKeys {
   static const String isLoggedIn = "isLoggedIn";
   static const String isAdmin = "isAdmin";
   static const String role = "role";
+  static const String userId = "userId";
 }

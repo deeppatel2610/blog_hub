@@ -2,8 +2,8 @@ import 'dart:developer';
 
 import 'package:blog_hub/%20core/utils/app_messenger.dart';
 import 'package:blog_hub/%20core/utils/enums.dart';
-import 'package:blog_hub/features/auth/auth_component.dart';
 import 'package:blog_hub/features/auth/controller/register_provider_controller.dart';
+import 'package:blog_hub/features/components/auth_component.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

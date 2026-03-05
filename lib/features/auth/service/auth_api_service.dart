@@ -23,7 +23,10 @@ class AuthApiService {
     required String password,
   }) async {
     try {
-      Response? response = await ApiClient().apiCalling(
+      Response? response = await ApiClient({
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+      }).apiCalling(
         context: context,
         endpoint: ApiConfig.register,
         method: HttpMethod.post,
@@ -32,10 +35,6 @@ class AuthApiService {
           "lastname": lastname,
           "email": email,
           "password": password,
-        },
-        headers: {
-          "Content-Type": "application/json",
-          "Accept": "application/json",
         },
       );
       if (response == null) {
@@ -71,16 +70,15 @@ class AuthApiService {
     required String password,
   }) async {
     try {
-      Response? response = await ApiClient().apiCalling(
+      Response? response = await ApiClient({
+        "Content-Type": "application/x-www-form-urlencoded",
+      }).apiCalling(
         context: context,
         endpoint: ApiConfig.login,
         method: HttpMethod.post,
         body: {
           "username": username,
           "password": password,
-        },
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
         },
       );
       if (response == null) {
@@ -91,6 +89,7 @@ class AuthApiService {
         String role = decodedToken['role'];
         SharedPreferences sharedPreferences =
             await SharedPreferences.getInstance();
+        log(decodedToken.toString(),level: 1000);
         if (role == "user") {
           sharedPreferences.setBool(PreferenceKeys.isAdmin, false);
         } else {
@@ -104,6 +103,7 @@ class AuthApiService {
             PreferenceKeys.tokenType, response.data['token_type']);
         sharedPreferences.setString(PreferenceKeys.username, username);
         sharedPreferences.setString(PreferenceKeys.password, password);
+        sharedPreferences.setInt(PreferenceKeys.userId, decodedToken['user_id']);
         return MessageType.success;
       } else if (response.statusCode == 400) {
         AppMessenger.showSnackBar(

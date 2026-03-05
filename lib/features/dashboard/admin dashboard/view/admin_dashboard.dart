@@ -1,7 +1,13 @@
-import 'package:blog_hub/features/dashboard/admin%20dashboard/admin_dashboard_componenr.dart';
+import 'package:blog_hub/%20core/storage/preference_keys.dart';
+import 'package:blog_hub/features/components/admin_dashboard_componenr.dart';
+import 'package:blog_hub/features/components/app_drawer.dart';
 import 'package:blog_hub/features/dashboard/admin%20dashboard/controller/admin_dashboard_provider_controller.dart';
+import 'package:blog_hub/features/dashboard/user%20dashboard/view/user_dashboard_screen.dart';
+import 'package:blog_hub/features/global%20feed/view/global_feed_screen.dart';
+import 'package:blog_hub/features/profile/view/profile_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AdminDashboardScreen extends StatefulWidget {
   const AdminDashboardScreen({super.key});
@@ -14,13 +20,15 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen>
     with TickerProviderStateMixin {
   late AnimationController _fadeController;
   late Animation<double> _fadeAnim;
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   void initState() {
     super.initState();
     _fadeController = AnimationController(
         vsync: this, duration: const Duration(milliseconds: 600));
-    _fadeAnim = CurvedAnimation(parent: _fadeController, curve: Curves.easeOut);
+    _fadeAnim =
+        CurvedAnimation(parent: _fadeController, curve: Curves.easeOut);
     _fadeController.forward();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -37,7 +45,9 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       backgroundColor: const Color(0xFF0D0D0D),
+      drawer: const AppDrawer(),
       body: SafeArea(
         child: FadeTransition(
           opacity: _fadeAnim,
@@ -62,6 +72,25 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen>
       padding: const EdgeInsets.fromLTRB(24, 24, 24, 0),
       child: Row(
         children: [
+          // ── Hamburger ──
+          GestureDetector(
+            onTap: () => _scaffoldKey.currentState?.openDrawer(),
+            child: Container(
+              width: 42,
+              height: 42,
+              margin: const EdgeInsets.only(right: 14),
+              decoration: BoxDecoration(
+                color: const Color(0xFF1A1A1A),
+                borderRadius: BorderRadius.circular(13),
+                border:
+                Border.all(color: Colors.white.withOpacity(0.08)),
+              ),
+              child: Icon(Icons.menu_rounded,
+                  color: Colors.white.withOpacity(0.6), size: 20),
+            ),
+          ),
+
+          // ── Logo + Title ──
           Container(
             width: 46,
             height: 46,
@@ -104,6 +133,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen>
             ],
           ),
           const Spacer(),
+
           // ── Refresh ──
           GestureDetector(
             onTap: () => context
@@ -115,7 +145,8 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen>
               decoration: BoxDecoration(
                 color: const Color(0xFF1A1A1A),
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Colors.white.withOpacity(0.08)),
+                border:
+                Border.all(color: Colors.white.withOpacity(0.08)),
               ),
               child: Icon(Icons.refresh_rounded,
                   color: Colors.white.withOpacity(0.6), size: 20),
@@ -173,19 +204,20 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen>
             style: const TextStyle(color: Colors.white, fontSize: 14),
             decoration: InputDecoration(
               hintText: 'Search by name, email or ID...',
-              hintStyle:
-                  TextStyle(color: Colors.white.withOpacity(0.3), fontSize: 13),
+              hintStyle: TextStyle(
+                  color: Colors.white.withOpacity(0.3), fontSize: 13),
               prefixIcon: Icon(Icons.search_rounded,
                   color: Colors.white.withOpacity(0.3), size: 20),
               suffixIcon: ctrl.searchQuery.isNotEmpty
                   ? IconButton(
-                      icon: Icon(Icons.clear_rounded,
-                          color: Colors.white.withOpacity(0.3), size: 18),
-                      onPressed: () {
-                        ctrl.searchController.clear();
-                        ctrl.onSearchChanged('');
-                      },
-                    )
+                icon: Icon(Icons.clear_rounded,
+                    color: Colors.white.withOpacity(0.3),
+                    size: 18),
+                onPressed: () {
+                  ctrl.searchController.clear();
+                  ctrl.onSearchChanged('');
+                },
+              )
                   : null,
               border: InputBorder.none,
               contentPadding: const EdgeInsets.symmetric(vertical: 14),
@@ -216,7 +248,8 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen>
                 const SizedBox(height: 12),
                 Text(ctrl.errorMessage!,
                     style: TextStyle(
-                        color: Colors.white.withOpacity(0.4), fontSize: 13)),
+                        color: Colors.white.withOpacity(0.4),
+                        fontSize: 13)),
                 const SizedBox(height: 16),
                 GradientButton(
                   label: 'Retry',
@@ -236,12 +269,12 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen>
                 const SizedBox(height: 12),
                 Text('No users found',
                     style: TextStyle(
-                        color: Colors.white.withOpacity(0.3), fontSize: 14)),
+                        color: Colors.white.withOpacity(0.3),
+                        fontSize: 14)),
               ],
             ),
           );
         }
-
         return ListView.separated(
           padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
           itemCount: ctrl.filteredUsers.length,

@@ -1,9 +1,10 @@
 import 'package:blog_hub/ core/utils/app_messenger.dart';
 import 'package:blog_hub/ core/utils/enums.dart';
-import 'package:blog_hub/features/auth/auth_component.dart';
 import 'package:blog_hub/features/auth/controller/login_provider_controller.dart';
 import 'package:blog_hub/features/auth/view/register_screen.dart';
+import 'package:blog_hub/features/components/auth_component.dart';
 import 'package:blog_hub/features/dashboard/admin%20dashboard/view/admin_dashboard.dart';
+import 'package:blog_hub/features/dashboard/user%20dashboard/view/user_dashboard_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -234,12 +235,7 @@ class _LoginScreenState extends State<LoginScreen>
                                           pageBuilder: (_, __, ___) => isLoggedIn
                                               ? isAdmin
                                                   ? const AdminDashboardScreen()
-                                                  : const Scaffold(
-                                                      body: Center(
-                                                        child: Text(
-                                                            'You are not an admin'),
-                                                      ),
-                                                    )
+                                                  : const UserDashboardScreen()
                                               : const LoginScreen(),
                                           transitionsBuilder:
                                               (_, animation, __, child) {
