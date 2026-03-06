@@ -1,3 +1,5 @@
+import 'package:blog_hub/features/add%20post/controller/add_edit_post_provider_controller.dart';
+import 'package:blog_hub/features/add%20post/view/add_edit_post_screen.dart';
 import 'package:blog_hub/features/auth/controller/login_provider_controller.dart';
 import 'package:blog_hub/features/auth/controller/register_provider_controller.dart';
 import 'package:blog_hub/features/auth/view/login_screen.dart';
@@ -26,6 +28,7 @@ void main() {
             create: (_) => UserDashboardProviderController()),
         ChangeNotifierProvider(create: (_) => GlobalFeedProviderController()),
         ChangeNotifierProvider(create: (_) => ProfileProviderController()),
+        ChangeNotifierProvider(create: (_) => AddEditPostProviderController()),
       ],
       child: const MyApp(),
     ),
@@ -46,6 +49,7 @@ class MyApp extends StatelessWidget {
         '/user-dashboard': (context) => const UserDashboardScreen(),
         '/global-feed': (context) => const GlobalFeedScreen(),
         '/profile': (context) => const ProfileScreen(),
+        '/add-edit-post': (context) => const AddEditPostScreen(),
       },
     );
   }

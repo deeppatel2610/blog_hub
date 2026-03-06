@@ -1,14 +1,11 @@
-import 'package:blog_hub/%20core/storage/preference_keys.dart';
+import 'package:blog_hub/features/add%20post/view/add_edit_post_screen.dart';
 import 'package:blog_hub/features/components/app_drawer.dart';
 import 'package:blog_hub/features/dashboard/user%20dashboard/controller/user_dashboard_provider_controller.dart';
 import 'package:blog_hub/features/dashboard/user%20dashboard/model/post_model.dart';
 import 'package:blog_hub/features/dashboard/user%20dashboard/view/post_read_screen.dart';
 import 'package:blog_hub/features/global%20feed/view/global_feed_screen.dart';
-import 'package:blog_hub/features/profile/view/profile_screen.dart';
-import 'package:blog_hub/features/dashboard/admin%20dashboard/view/admin_dashboard.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class UserDashboardScreen extends StatefulWidget {
   const UserDashboardScreen({super.key});
@@ -28,8 +25,7 @@ class _UserDashboardScreenState extends State<UserDashboardScreen>
     super.initState();
     _fadeController = AnimationController(
         vsync: this, duration: const Duration(milliseconds: 700));
-    _fadeAnim =
-        CurvedAnimation(parent: _fadeController, curve: Curves.easeOut);
+    _fadeAnim = CurvedAnimation(parent: _fadeController, curve: Curves.easeOut);
     _fadeController.forward();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -81,6 +77,7 @@ class _UserDashboardScreenState extends State<UserDashboardScreen>
 
 class _DashboardBody extends StatelessWidget {
   final GlobalKey<ScaffoldState> scaffoldKey;
+
   const _DashboardBody({required this.scaffoldKey});
 
   @override
@@ -116,8 +113,7 @@ class _DashboardBody extends StatelessWidget {
               decoration: BoxDecoration(
                 color: const Color(0xFF1A1A1A),
                 borderRadius: BorderRadius.circular(13),
-                border:
-                Border.all(color: Colors.white.withOpacity(0.08)),
+                border: Border.all(color: Colors.white.withOpacity(0.08)),
               ),
               child: Icon(Icons.menu_rounded,
                   color: Colors.white.withOpacity(0.6), size: 20),
@@ -149,6 +145,53 @@ class _DashboardBody extends StatelessWidget {
 
           const Spacer(),
 
+          // ── Add Post Button ──
+          GestureDetector(
+            onTap: () async {
+              final result = await Navigator.push(
+                context,
+                PageRouteBuilder(
+                  pageBuilder: (_, __, ___) => const AddEditPostScreen(),
+                  transitionsBuilder: (_, anim, __, child) => SlideTransition(
+                    position: Tween<Offset>(
+                      begin: const Offset(0, 1),
+                      end: Offset.zero,
+                    ).animate(CurvedAnimation(
+                        parent: anim, curve: Curves.easeOutCubic)),
+                    child: child,
+                  ),
+                  transitionDuration: const Duration(milliseconds: 400),
+                ),
+              );
+              // ── Refresh list if post was created ──
+              if (result == true && context.mounted) {
+                context
+                    .read<UserDashboardProviderController>()
+                    .fetchAllPosts(context);
+              }
+            },
+            child: Container(
+              width: 42,
+              height: 42,
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                    colors: [Color(0xFF4CAF50), Color(0xFF66BB6A)]),
+                borderRadius: BorderRadius.circular(13),
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color(0xFF4CAF50).withOpacity(0.35),
+                    blurRadius: 14,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: const Icon(Icons.add_rounded,
+                  color: Colors.white, size: 22),
+            ),
+          ),
+
+          const SizedBox(width: 10),
+
           // ── Refresh ──
           Consumer<UserDashboardProviderController>(
             builder: (context, ctrl, _) => GestureDetector(
@@ -159,8 +202,7 @@ class _DashboardBody extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: const Color(0xFF1A1A1A),
                   borderRadius: BorderRadius.circular(13),
-                  border:
-                  Border.all(color: Colors.white.withOpacity(0.08)),
+                  border: Border.all(color: Colors.white.withOpacity(0.08)),
                 ),
                 child: Icon(Icons.refresh_rounded,
                     color: Colors.white.withOpacity(0.55), size: 20),
@@ -176,15 +218,14 @@ class _DashboardBody extends StatelessWidget {
               context,
               PageRouteBuilder(
                 pageBuilder: (_, __, ___) => const GlobalFeedScreen(),
-                transitionsBuilder: (_, anim, __, child) =>
-                    SlideTransition(
-                      position: Tween<Offset>(
-                        begin: const Offset(1, 0),
-                        end: Offset.zero,
-                      ).animate(CurvedAnimation(
-                          parent: anim, curve: Curves.easeOutCubic)),
-                      child: child,
-                    ),
+                transitionsBuilder: (_, anim, __, child) => SlideTransition(
+                  position: Tween<Offset>(
+                    begin: const Offset(1, 0),
+                    end: Offset.zero,
+                  ).animate(CurvedAnimation(
+                      parent: anim, curve: Curves.easeOutCubic)),
+                  child: child,
+                ),
                 transitionDuration: const Duration(milliseconds: 350),
               ),
             ),
@@ -262,20 +303,19 @@ class _DashboardBody extends StatelessWidget {
             style: const TextStyle(color: Colors.white, fontSize: 14),
             decoration: InputDecoration(
               hintText: 'Search your posts...',
-              hintStyle: TextStyle(
-                  color: Colors.white.withOpacity(0.3), fontSize: 13),
+              hintStyle:
+                  TextStyle(color: Colors.white.withOpacity(0.3), fontSize: 13),
               prefixIcon: Icon(Icons.search_rounded,
                   color: Colors.white.withOpacity(0.3), size: 20),
               suffixIcon: ctrl.searchQuery.isNotEmpty
                   ? IconButton(
-                icon: Icon(Icons.clear_rounded,
-                    color: Colors.white.withOpacity(0.3),
-                    size: 18),
-                onPressed: () {
-                  ctrl.searchController.clear();
-                  ctrl.onSearchChanged('');
-                },
-              )
+                      icon: Icon(Icons.clear_rounded,
+                          color: Colors.white.withOpacity(0.3), size: 18),
+                      onPressed: () {
+                        ctrl.searchController.clear();
+                        ctrl.onSearchChanged('');
+                      },
+                    )
                   : null,
               border: InputBorder.none,
               contentPadding: const EdgeInsets.symmetric(vertical: 15),
@@ -307,15 +347,13 @@ class _DashboardBody extends StatelessWidget {
                           fontWeight: FontWeight.w700)),
                   const SizedBox(width: 8),
                   Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 8, vertical: 3),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                     decoration: BoxDecoration(
-                      color:
-                      const Color(0xFFFF6B35).withOpacity(0.12),
+                      color: const Color(0xFFFF6B35).withOpacity(0.12),
                       borderRadius: BorderRadius.circular(20),
                       border: Border.all(
-                          color: const Color(0xFFFF6B35)
-                              .withOpacity(0.3)),
+                          color: const Color(0xFFFF6B35).withOpacity(0.3)),
                     ),
                     child: Text('${recent.length}',
                         style: const TextStyle(
@@ -333,11 +371,9 @@ class _DashboardBody extends StatelessWidget {
                 physics: const BouncingScrollPhysics(),
                 padding: const EdgeInsets.symmetric(horizontal: 24),
                 itemCount: recent.take(6).length,
-                separatorBuilder: (_, __) =>
-                const SizedBox(width: 14),
+                separatorBuilder: (_, __) => const SizedBox(width: 14),
                 itemBuilder: (_, index) => GestureDetector(
-                  onTap: () =>
-                      _navigateToRead(context, recent[index]),
+                  onTap: () => _navigateToRead(context, recent[index]),
                   child: _RecentCard(post: recent[index]),
                 ),
               ),
@@ -365,8 +401,7 @@ class _DashboardBody extends StatelessWidget {
               Text(
                 '${ctrl.filteredMyPosts.length} result${ctrl.filteredMyPosts.length != 1 ? 's' : ''}',
                 style: TextStyle(
-                    color: Colors.white.withOpacity(0.35),
-                    fontSize: 12),
+                    color: Colors.white.withOpacity(0.35), fontSize: 12),
               ),
           ],
         ),
@@ -393,8 +428,7 @@ class _DashboardBody extends StatelessWidget {
                         ? 'No posts match your search'
                         : "You haven't written any posts yet",
                     style: TextStyle(
-                        color: Colors.white.withOpacity(0.3),
-                        fontSize: 14),
+                        color: Colors.white.withOpacity(0.3), fontSize: 14),
                   ),
                 ],
               ),
@@ -405,12 +439,11 @@ class _DashboardBody extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 24),
           sliver: SliverList(
             delegate: SliverChildBuilderDelegate(
-                  (_, index) => Padding(
+              (_, index) => Padding(
                 padding: const EdgeInsets.only(bottom: 14),
                 child: _PostCard(
                   post: posts[index],
-                  onTap: () =>
-                      _navigateToRead(context, posts[index]),
+                  onTap: () => _navigateToRead(context, posts[index]),
                 ),
               ),
               childCount: posts.length,
@@ -425,14 +458,19 @@ class _DashboardBody extends StatelessWidget {
     Navigator.push(
       context,
       PageRouteBuilder(
-        pageBuilder: (_, __, ___) => PostReadScreen(post: post),
+        pageBuilder: (_, __, ___) => PostReadScreen(
+          post: post,
+          isOwnPost:
+              context.read<UserDashboardProviderController>().currentUserId ==
+                  post.userId,
+        ),
         transitionsBuilder: (_, animation, __, child) {
           return SlideTransition(
             position: Tween<Offset>(
               begin: const Offset(1, 0),
               end: Offset.zero,
-            ).animate(CurvedAnimation(
-                parent: animation, curve: Curves.easeOutCubic)),
+            ).animate(
+                CurvedAnimation(parent: animation, curve: Curves.easeOutCubic)),
             child: child,
           );
         },
@@ -463,8 +501,7 @@ class _StatCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Expanded(
       child: Container(
-        padding:
-        const EdgeInsets.symmetric(vertical: 14, horizontal: 14),
+        padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 14),
         decoration: BoxDecoration(
           color: const Color(0xFF141414),
           borderRadius: BorderRadius.circular(14),
@@ -477,9 +514,7 @@ class _StatCard extends StatelessWidget {
             const SizedBox(height: 8),
             Text(value,
                 style: TextStyle(
-                    color: color,
-                    fontSize: 22,
-                    fontWeight: FontWeight.w800)),
+                    color: color, fontSize: 22, fontWeight: FontWeight.w800)),
             Text(label,
                 style: TextStyle(
                     color: Colors.white.withOpacity(0.35),
@@ -498,6 +533,7 @@ class _StatCard extends StatelessWidget {
 
 class _RecentCard extends StatelessWidget {
   final PostModel post;
+
   const _RecentCard({required this.post});
 
   @override
@@ -508,8 +544,7 @@ class _RecentCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: const Color(0xFF141414),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-            color: const Color(0xFFFF6B35).withOpacity(0.15)),
+        border: Border.all(color: const Color(0xFFFF6B35).withOpacity(0.15)),
       ),
       child: Stack(
         children: [
@@ -529,14 +564,12 @@ class _RecentCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 8, vertical: 3),
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                 decoration: BoxDecoration(
                   color: const Color(0xFFFF6B35).withOpacity(0.1),
                   borderRadius: BorderRadius.circular(6),
                   border: Border.all(
-                      color:
-                      const Color(0xFFFF6B35).withOpacity(0.25)),
+                      color: const Color(0xFFFF6B35).withOpacity(0.25)),
                 ),
                 child: Text('POST #${post.id}',
                     style: const TextStyle(
@@ -562,8 +595,7 @@ class _RecentCard extends StatelessWidget {
                   const SizedBox(width: 5),
                   Text(post.formattedDate,
                       style: TextStyle(
-                          color: Colors.white.withOpacity(0.35),
-                          fontSize: 10)),
+                          color: Colors.white.withOpacity(0.35), fontSize: 10)),
                   const Spacer(),
                   const Icon(Icons.arrow_forward_rounded,
                       color: Color(0xFFFF6B35), size: 14),
@@ -604,13 +636,12 @@ class _PostCard extends StatelessWidget {
             Row(
               children: [
                 Container(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 8, vertical: 3),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                   decoration: BoxDecoration(
                     color: Colors.white.withOpacity(0.05),
                     borderRadius: BorderRadius.circular(6),
-                    border: Border.all(
-                        color: Colors.white.withOpacity(0.1)),
+                    border: Border.all(color: Colors.white.withOpacity(0.1)),
                   ),
                   child: Text('#${post.id}',
                       style: TextStyle(
@@ -621,15 +652,13 @@ class _PostCard extends StatelessWidget {
                 const SizedBox(width: 8),
                 if (post.isUpdated)
                   Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 8, vertical: 3),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                     decoration: BoxDecoration(
-                      color:
-                      const Color(0xFF42A5F5).withOpacity(0.1),
+                      color: const Color(0xFF42A5F5).withOpacity(0.1),
                       borderRadius: BorderRadius.circular(6),
                       border: Border.all(
-                          color: const Color(0xFF42A5F5)
-                              .withOpacity(0.25)),
+                          color: const Color(0xFF42A5F5).withOpacity(0.25)),
                     ),
                     child: const Row(
                       children: [
@@ -646,14 +675,13 @@ class _PostCard extends StatelessWidget {
                   ),
                 const Spacer(),
                 Container(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 8, vertical: 3),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                   decoration: BoxDecoration(
                     color: const Color(0xFFFF6B35).withOpacity(0.08),
                     borderRadius: BorderRadius.circular(6),
                     border: Border.all(
-                        color:
-                        const Color(0xFFFF6B35).withOpacity(0.2)),
+                        color: const Color(0xFFFF6B35).withOpacity(0.2)),
                   ),
                   child: const Row(
                     children: [
@@ -686,8 +714,7 @@ class _PostCard extends StatelessWidget {
                     fontSize: 12,
                     height: 1.6)),
             const SizedBox(height: 14),
-            Divider(
-                color: Colors.white.withOpacity(0.05), height: 1),
+            Divider(color: Colors.white.withOpacity(0.05), height: 1),
             const SizedBox(height: 12),
             Row(
               children: [
@@ -696,8 +723,7 @@ class _PostCard extends StatelessWidget {
                 const SizedBox(width: 6),
                 Text(post.formattedDate,
                     style: TextStyle(
-                        color: Colors.white.withOpacity(0.35),
-                        fontSize: 11)),
+                        color: Colors.white.withOpacity(0.35), fontSize: 11)),
                 const Spacer(),
                 Row(
                   children: [
@@ -730,6 +756,7 @@ class _PostCard extends StatelessWidget {
 class _ErrorView extends StatelessWidget {
   final String message;
   final VoidCallback onRetry;
+
   const _ErrorView({required this.message, required this.onRetry});
 
   @override
@@ -769,8 +796,8 @@ class _ErrorView extends StatelessWidget {
             GestureDetector(
               onTap: onRetry,
               child: Container(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 32, vertical: 13),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 32, vertical: 13),
                 decoration: BoxDecoration(
                   gradient: const LinearGradient(
                       colors: [Color(0xFFFF6B35), Color(0xFFFF9A6C)]),

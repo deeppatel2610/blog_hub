@@ -27,7 +27,7 @@ class PostModel {
   }
 
   String get authorAvatarUrl =>
-      'https://ui-avatars.com/api/?name=User+$userId&background=FF6B35&color=fff&bold=true&size=64&rounded=true';
+      'https://ui-avatars.com/api/?name=User+&background=FF6B35&color=fff&bold=true&size=64&rounded=true';
 
   String get formattedDate {
     const months = [

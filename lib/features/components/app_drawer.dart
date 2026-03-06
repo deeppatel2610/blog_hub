@@ -381,7 +381,7 @@ class _AppDrawerState extends State<AppDrawer>
             ),
             child: ClipOval(
               child: Image.network(
-                'https://ui-avatars.com/api/?name=User+$_userId&background=FF6B35&color=fff&bold=true&size=80&rounded=true',
+                'https://ui-avatars.com/api/?name=User+&background=FF6B35&color=fff&bold=true&size=80&rounded=true',
                 width: 54,
                 height: 54,
                 fit: BoxFit.cover,
@@ -400,9 +400,9 @@ class _AppDrawerState extends State<AppDrawer>
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  'User $_userId',
-                  style: const TextStyle(
+                const Text(
+                  'User',
+                  style: TextStyle(
                     color: Colors.white,
                     fontSize: 16,
                     fontWeight: FontWeight.w800,
