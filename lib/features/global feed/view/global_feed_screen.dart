@@ -1,4 +1,4 @@
-
+import 'package:blog_hub/features/dashboard/user%20dashboard/controller/user_dashboard_provider_controller.dart';
 import 'package:blog_hub/features/dashboard/user%20dashboard/model/post_model.dart';
 import 'package:blog_hub/features/dashboard/user%20dashboard/view/post_read_screen.dart';
 import 'package:blog_hub/features/global%20feed/controller/global_feed_provider_controller.dart';
@@ -22,8 +22,7 @@ class _GlobalFeedScreenState extends State<GlobalFeedScreen>
     super.initState();
     _fadeController = AnimationController(
         vsync: this, duration: const Duration(milliseconds: 600));
-    _fadeAnim =
-        CurvedAnimation(parent: _fadeController, curve: Curves.easeOut);
+    _fadeAnim = CurvedAnimation(parent: _fadeController, curve: Curves.easeOut);
     _fadeController.forward();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -205,19 +204,19 @@ class _FeedBody extends StatelessWidget {
             style: const TextStyle(color: Colors.white, fontSize: 14),
             decoration: InputDecoration(
               hintText: 'Search all posts...',
-              hintStyle: TextStyle(
-                  color: Colors.white.withOpacity(0.3), fontSize: 13),
+              hintStyle:
+                  TextStyle(color: Colors.white.withOpacity(0.3), fontSize: 13),
               prefixIcon: Icon(Icons.search_rounded,
                   color: Colors.white.withOpacity(0.3), size: 20),
               suffixIcon: ctrl.searchQuery.isNotEmpty
                   ? IconButton(
-                icon: Icon(Icons.clear_rounded,
-                    color: Colors.white.withOpacity(0.3), size: 18),
-                onPressed: () {
-                  ctrl.searchController.clear();
-                  ctrl.onSearchChanged('');
-                },
-              )
+                      icon: Icon(Icons.clear_rounded,
+                          color: Colors.white.withOpacity(0.3), size: 18),
+                      onPressed: () {
+                        ctrl.searchController.clear();
+                        ctrl.onSearchChanged('');
+                      },
+                    )
                   : null,
               border: InputBorder.none,
               contentPadding: const EdgeInsets.symmetric(vertical: 15),
@@ -244,13 +243,12 @@ class _FeedBody extends StatelessWidget {
             ),
             const SizedBox(width: 8),
             Container(
-              padding:
-              const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
               decoration: BoxDecoration(
                 color: const Color(0xFFFF6B35).withOpacity(0.12),
                 borderRadius: BorderRadius.circular(20),
-                border: Border.all(
-                    color: const Color(0xFFFF6B35).withOpacity(0.3)),
+                border:
+                    Border.all(color: const Color(0xFFFF6B35).withOpacity(0.3)),
               ),
               child: Text(
                 '${ctrl.filteredPosts.length}',
@@ -304,24 +302,29 @@ class _FeedBody extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 24),
           sliver: SliverList(
             delegate: SliverChildBuilderDelegate(
-                  (_, index) => Padding(
+              (_, index) => Padding(
                 padding: const EdgeInsets.only(bottom: 14),
                 child: _GlobalPostCard(
                   post: posts[index],
                   onTap: () => Navigator.push(
                     context,
                     PageRouteBuilder(
-                      pageBuilder: (_, __, ___) =>
-                          PostReadScreen(post: posts[index]),
+                      pageBuilder: (_, __, ___) => PostReadScreen(
+                        post: posts[index],
+                        isOwnPost: context
+                                .read<UserDashboardProviderController>()
+                                .currentUserId ==
+                            posts[index].userId,
+                      ),
                       transitionsBuilder: (_, anim, __, child) =>
                           SlideTransition(
-                            position: Tween<Offset>(
-                              begin: const Offset(1, 0),
-                              end: Offset.zero,
-                            ).animate(CurvedAnimation(
-                                parent: anim, curve: Curves.easeOutCubic)),
-                            child: child,
-                          ),
+                        position: Tween<Offset>(
+                          begin: const Offset(1, 0),
+                          end: Offset.zero,
+                        ).animate(CurvedAnimation(
+                            parent: anim, curve: Curves.easeOutCubic)),
+                        child: child,
+                      ),
                       transitionDuration: const Duration(milliseconds: 350),
                     ),
                   ),
@@ -445,9 +448,9 @@ class _GlobalPostCard extends StatelessWidget {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      'User ${post.userId}',
-                      style: const TextStyle(
+                    const Text(
+                      'User',
+                      style: TextStyle(
                           color: Colors.white,
                           fontSize: 12,
                           fontWeight: FontWeight.w700),
@@ -455,8 +458,7 @@ class _GlobalPostCard extends StatelessWidget {
                     Text(
                       post.formattedDate,
                       style: TextStyle(
-                          color: Colors.white.withOpacity(0.3),
-                          fontSize: 10),
+                          color: Colors.white.withOpacity(0.3), fontSize: 10),
                     ),
                   ],
                 ),
@@ -464,12 +466,11 @@ class _GlobalPostCard extends StatelessWidget {
                 // Post ID badge
                 Container(
                   padding:
-                  const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                   decoration: BoxDecoration(
                     color: Colors.white.withOpacity(0.05),
                     borderRadius: BorderRadius.circular(6),
-                    border:
-                    Border.all(color: Colors.white.withOpacity(0.08)),
+                    border: Border.all(color: Colors.white.withOpacity(0.08)),
                   ),
                   child: Text('#${post.id}',
                       style: TextStyle(
@@ -480,8 +481,8 @@ class _GlobalPostCard extends StatelessWidget {
                 if (post.isUpdated) ...[
                   const SizedBox(width: 6),
                   Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 8, vertical: 3),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                     decoration: BoxDecoration(
                       color: const Color(0xFF42A5F5).withOpacity(0.1),
                       borderRadius: BorderRadius.circular(6),
@@ -538,8 +539,8 @@ class _GlobalPostCard extends StatelessWidget {
                         fontWeight: FontWeight.w600)),
                 const Spacer(),
                 Container(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 12, vertical: 6),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                   decoration: BoxDecoration(
                     color: const Color(0xFFFF6B35).withOpacity(0.08),
                     borderRadius: BorderRadius.circular(8),
@@ -578,6 +579,7 @@ class _GlobalPostCard extends StatelessWidget {
 class _ErrorView extends StatelessWidget {
   final String message;
   final VoidCallback onRetry;
+
   const _ErrorView({required this.message, required this.onRetry});
 
   @override
@@ -617,8 +619,8 @@ class _ErrorView extends StatelessWidget {
             GestureDetector(
               onTap: onRetry,
               child: Container(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 32, vertical: 13),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 32, vertical: 13),
                 decoration: BoxDecoration(
                   gradient: const LinearGradient(
                       colors: [Color(0xFFFF6B35), Color(0xFFFF9A6C)]),

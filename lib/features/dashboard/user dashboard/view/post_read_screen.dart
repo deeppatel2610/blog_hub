@@ -1,9 +1,16 @@
+import 'package:blog_hub/features/add%20post/view/add_edit_post_screen.dart';
 import 'package:blog_hub/features/dashboard/user%20dashboard/model/post_model.dart';
 import 'package:flutter/material.dart';
 
 class PostReadScreen extends StatefulWidget {
   final PostModel post;
-  const PostReadScreen({super.key, required this.post});
+  final bool isOwnPost;
+
+  const PostReadScreen({
+    super.key,
+    required this.post,
+    this.isOwnPost = false,
+  });
 
   @override
   State<PostReadScreen> createState() => _PostReadScreenState();
@@ -21,8 +28,7 @@ class _PostReadScreenState extends State<PostReadScreen>
     super.initState();
     _fadeController = AnimationController(
         vsync: this, duration: const Duration(milliseconds: 500));
-    _fadeAnim =
-        CurvedAnimation(parent: _fadeController, curve: Curves.easeOut);
+    _fadeAnim = CurvedAnimation(parent: _fadeController, curve: Curves.easeOut);
     _fadeController.forward();
 
     _scrollController.addListener(() {
@@ -68,19 +74,76 @@ class _PostReadScreenState extends State<PostReadScreen>
                       decoration: BoxDecoration(
                         color: const Color(0xFF1A1A1A),
                         borderRadius: BorderRadius.circular(10),
-                        border: Border.all(
-                            color: Colors.white.withOpacity(0.08)),
+                        border:
+                            Border.all(color: Colors.white.withOpacity(0.08)),
                       ),
                       child: Icon(Icons.arrow_back_rounded,
                           color: Colors.white.withOpacity(0.7), size: 18),
                     ),
                   ),
                   actions: [
-                    // Read time chip
+                    // ── Edit button (only for own posts) ──
+                    if (widget.isOwnPost)
+                      GestureDetector(
+                        onTap: () async {
+                          // In _showEditSheet, replace the placeholder with:
+                          Navigator.pop(context); // close bottom sheet first
+                          final result = await Navigator.push(
+                            context,
+                            PageRouteBuilder(
+                              pageBuilder: (_, __, ___) =>
+                                  AddEditPostScreen(post: post),
+                              transitionsBuilder: (_, anim, __, child) =>
+                                  SlideTransition(
+                                position: Tween<Offset>(
+                                  begin: const Offset(0, 1),
+                                  end: Offset.zero,
+                                ).animate(CurvedAnimation(
+                                    parent: anim, curve: Curves.easeOutCubic)),
+                                child: child,
+                              ),
+                              transitionDuration:
+                                  const Duration(milliseconds: 400),
+                            ),
+                          );
+                          if (result == true && context.mounted) {
+                            Navigator.pop(
+                                context); // go back to dashboard to refresh
+                          }
+                        },
+                        child: Container(
+                          margin: const EdgeInsets.only(
+                              right: 10, top: 8, bottom: 8),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 12, vertical: 6),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFFF6B35).withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(
+                                color:
+                                    const Color(0xFFFF6B35).withOpacity(0.3)),
+                          ),
+                          child: const Row(
+                            children: [
+                              Icon(Icons.edit_rounded,
+                                  color: Color(0xFFFF6B35), size: 13),
+                              SizedBox(width: 5),
+                              Text('Edit',
+                                  style: TextStyle(
+                                      color: Color(0xFFFF6B35),
+                                      fontSize: 11,
+                                      fontWeight: FontWeight.w700)),
+                            ],
+                          ),
+                        ),
+                      ),
+
+                    // ── Read time chip ──
                     Container(
-                      margin: const EdgeInsets.only(right: 16, top: 8, bottom: 8),
-                      padding:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      margin:
+                          const EdgeInsets.only(right: 16, top: 8, bottom: 8),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 12, vertical: 6),
                       decoration: BoxDecoration(
                         color: const Color(0xFFFF6B35).withOpacity(0.1),
                         borderRadius: BorderRadius.circular(20),
@@ -116,8 +179,7 @@ class _PostReadScreenState extends State<PostReadScreen>
                               padding: const EdgeInsets.symmetric(
                                   horizontal: 10, vertical: 4),
                               decoration: BoxDecoration(
-                                color:
-                                Colors.white.withOpacity(0.05),
+                                color: Colors.white.withOpacity(0.05),
                                 borderRadius: BorderRadius.circular(8),
                                 border: Border.all(
                                     color: Colors.white.withOpacity(0.1)),
@@ -135,8 +197,8 @@ class _PostReadScreenState extends State<PostReadScreen>
                                 padding: const EdgeInsets.symmetric(
                                     horizontal: 10, vertical: 4),
                                 decoration: BoxDecoration(
-                                  color: const Color(0xFF42A5F5)
-                                      .withOpacity(0.1),
+                                  color:
+                                      const Color(0xFF42A5F5).withOpacity(0.1),
                                   borderRadius: BorderRadius.circular(8),
                                   border: Border.all(
                                       color: const Color(0xFF42A5F5)
@@ -148,6 +210,34 @@ class _PostReadScreenState extends State<PostReadScreen>
                                         fontSize: 10,
                                         fontWeight: FontWeight.w700)),
                               ),
+                            // ── Own post indicator ──
+                            if (widget.isOwnPost) ...[
+                              const SizedBox(width: 8),
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 10, vertical: 4),
+                                decoration: BoxDecoration(
+                                  color:
+                                      const Color(0xFF4CAF50).withOpacity(0.1),
+                                  borderRadius: BorderRadius.circular(8),
+                                  border: Border.all(
+                                      color: const Color(0xFF4CAF50)
+                                          .withOpacity(0.25)),
+                                ),
+                                child: const Row(
+                                  children: [
+                                    Icon(Icons.person_rounded,
+                                        color: Color(0xFF4CAF50), size: 10),
+                                    SizedBox(width: 4),
+                                    Text('My Post',
+                                        style: TextStyle(
+                                            color: Color(0xFF4CAF50),
+                                            fontSize: 10,
+                                            fontWeight: FontWeight.w700)),
+                                  ],
+                                ),
+                              ),
+                            ],
                           ],
                         ),
                         const SizedBox(height: 20),
@@ -194,8 +284,7 @@ class _PostReadScreenState extends State<PostReadScreen>
                                       color: const Color(0xFF1A1A1A),
                                       child: const Center(
                                         child: Icon(Icons.person_rounded,
-                                            color: Color(0xFFFF6B35),
-                                            size: 20),
+                                            color: Color(0xFFFF6B35), size: 20),
                                       ),
                                     ),
                                   ),
@@ -206,11 +295,14 @@ class _PostReadScreenState extends State<PostReadScreen>
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text('User ${post.userId}',
-                                        style: const TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 13,
-                                            fontWeight: FontWeight.w700)),
+                                    const Text(
+                                      'User',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 13,
+                                        fontWeight: FontWeight.w700,
+                                      ),
+                                    ),
                                     const SizedBox(height: 2),
                                     Text(
                                       'Published ${post.formattedDate}',
@@ -228,7 +320,7 @@ class _PostReadScreenState extends State<PostReadScreen>
                                     Text('Updated',
                                         style: TextStyle(
                                             color:
-                                            Colors.white.withOpacity(0.3),
+                                                Colors.white.withOpacity(0.3),
                                             fontSize: 10)),
                                     Text(
                                       post.updatedAt != null
@@ -325,11 +417,70 @@ class _PostReadScreenState extends State<PostReadScreen>
                                     fontWeight: FontWeight.w500),
                               ),
                               const SizedBox(height: 6),
+                              // ── Edit again at bottom (own posts only) ──
+                              if (widget.isOwnPost)
+                                GestureDetector(
+                                  onTap: () async {
+                                    // In _showEditSheet, replace the placeholder with:
+                                    Navigator.pop(
+                                        context); // close bottom sheet first
+                                    final result = await Navigator.push(
+                                      context,
+                                      PageRouteBuilder(
+                                        pageBuilder: (_, __, ___) =>
+                                            AddEditPostScreen(post: post),
+                                        transitionsBuilder:
+                                            (_, anim, __, child) =>
+                                                SlideTransition(
+                                          position: Tween<Offset>(
+                                            begin: const Offset(0, 1),
+                                            end: Offset.zero,
+                                          ).animate(CurvedAnimation(
+                                              parent: anim,
+                                              curve: Curves.easeOutCubic)),
+                                          child: child,
+                                        ),
+                                        transitionDuration:
+                                            const Duration(milliseconds: 400),
+                                      ),
+                                    );
+                                    if (result == true && context.mounted) {
+                                      Navigator.pop(
+                                          context); // go back to dashboard to refresh
+                                    }
+                                  },
+                                  child: Container(
+                                    margin: const EdgeInsets.only(bottom: 10),
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 20, vertical: 10),
+                                    decoration: BoxDecoration(
+                                      color: const Color(0xFFFF6B35)
+                                          .withOpacity(0.1),
+                                      borderRadius: BorderRadius.circular(12),
+                                      border: Border.all(
+                                          color: const Color(0xFFFF6B35)
+                                              .withOpacity(0.3)),
+                                    ),
+                                    child: const Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Icon(Icons.edit_rounded,
+                                            color: Color(0xFFFF6B35), size: 14),
+                                        SizedBox(width: 6),
+                                        Text('Edit This Post',
+                                            style: TextStyle(
+                                                color: Color(0xFFFF6B35),
+                                                fontSize: 13,
+                                                fontWeight: FontWeight.w700)),
+                                      ],
+                                    ),
+                                  ),
+                                ),
                               GestureDetector(
                                 onTap: () => Navigator.pop(context),
                                 child: const Text(
                                   '← Back to My Posts',
-                                  style:  TextStyle(
+                                  style: TextStyle(
                                       color: Color(0xFFFF6B35),
                                       fontSize: 13,
                                       fontWeight: FontWeight.w700),
@@ -345,7 +496,7 @@ class _PostReadScreenState extends State<PostReadScreen>
               ],
             ),
 
-            // ── Read Progress Bar (top) ──
+            // ── Read Progress Bar ──
             Positioned(
               top: 0,
               left: 0,
@@ -373,8 +524,18 @@ class _PostReadScreenState extends State<PostReadScreen>
 
   String _formatDate(DateTime dt) {
     const months = [
-      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec'
     ];
     return '${months[dt.month - 1]} ${dt.day}, ${dt.year}';
   }
