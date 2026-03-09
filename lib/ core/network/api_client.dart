@@ -1,10 +1,13 @@
+import 'dart:async';
 import 'dart:developer';
 import 'package:blog_hub/%20core/network/global_internet_speed_service.dart';
+import 'package:blog_hub/%20core/storage/preference_keys.dart';
 import 'package:blog_hub/%20core/utils/app_messenger.dart';
 import 'package:blog_hub/%20core/utils/enums.dart';
 import 'package:dio/dio.dart';
 import 'package:blog_hub/%20core/network/api_config.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ApiClient {
   Dio dio = Dio();
@@ -25,6 +28,45 @@ class ApiClient {
     );
     dio.interceptors.add(
       InterceptorsWrapper(
+        onError: (error, handler) async {
+          if (error.response?.statusCode == 401) {
+            if (error.requestOptions.path == ApiConfig.login) {
+              return handler.next(error);
+            }
+
+            SharedPreferences prefs = await SharedPreferences.getInstance();
+            String username = prefs.getString(PreferenceKeys.username) ?? "";
+            String password = prefs.getString(PreferenceKeys.password) ?? "";
+
+            if (username.isNotEmpty && password.isNotEmpty) {
+              Response loginResponse = await dio.post(
+                ApiConfig.login,
+                options: Options(headers: {
+                  "Content-Type": "application/x-www-form-urlencoded"
+                }),
+                data: {
+                  "username": username,
+                  "password": password,
+                },
+              );
+              if (loginResponse.statusCode == 200) {
+                String accessToken = loginResponse.data["access_token"];
+                String tokenType = loginResponse.data["token_type"];
+                prefs.setString(PreferenceKeys.assessToken, accessToken);
+                prefs.setString(PreferenceKeys.tokenType, tokenType);
+                dio.options.headers["Authorization"] =
+                    "$tokenType $accessToken";
+                error.requestOptions.headers["Authorization"] =
+                    "$tokenType $accessToken";
+
+                final response = await Dio().fetch(error.requestOptions);
+                return handler.resolve(response);
+              }
+              return handler.next(error);
+            }
+          }
+          return handler.next(error);
+        },
         onRequest: (options, handler) {
           log("FULL URL => ${options.uri}");
           log("METHOD => ${options.method}");
